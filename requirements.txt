@@ -1,0 +1,4 @@
+
+asyncpg
+nats-py
+python-dotenv

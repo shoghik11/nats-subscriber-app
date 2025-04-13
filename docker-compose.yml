@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: messages_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  nats:
+    image: nats:2.10
+    ports:
+      - "4222:4222"
+
+  app:
+    build: .
+    depends_on:
+      - postgres
+      - nats
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
