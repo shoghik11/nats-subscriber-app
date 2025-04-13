@@ -46,62 +46,81 @@ CREATE TABLE messages (
 );
 ```
 
-## 🚀 Running the App
+## 🚀 Running the Application
 
-1. Clone the Repository
+Clone the Repository
 ```
 git clone https://github.com/shoghik11/nats-subscriber-app.git
 cd nats-subscriber-app
 ```
 
-2. Create .env file
+### Via Docker Compose (Recommended)
+
+To start the services, run the following command from the root directory of your project:
 ```
-DB_HOST=postgres
+docker-compose up
+```
+
+This will spin up:
+- The NATS server
+- A PostgreSQL container
+- Your Python subscriber application
+
+### Via Python (Without Docker)
+
+1. Install the required dependencies:
+```
+pip install -r requirements.txt
+```
+
+2. Create a .env file in the root directory and configure the environment variables as follows:
+```
+DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=messages_db
 DB_USER=user
 DB_PASSWORD=password
-
-NATS_URL=nats://nats:4222
+NATS_URL=nats://localhost:4222
 NATS_SUBJECT=messages
 ```
-3. Start Services via Docker Compose
 
+3. Run the application:
 ```
-docker-compose up --build
+python -m app.api.subscriber
 ```
+This will connect to the NATS server, subscribe to the messages subject, and start listening for messages.
 
-4. Publishing Messages to NATS
-
-In a new terminal, use the official NATS CLI:
-```
-nats pub messages "Hello from NATS!"
-```
-
-5. Checking Stored Messages
-To manually inspect stored messages:
+## 📊 Verifying Data in PostgreSQL
+To check the stored messages:
+1. Access the PostgreSQL container:
 ```
 docker exec -it nats_subscriber_app-postgres-1 psql -U user -d messages_db
 ```
-Then run:
+2. Run:
 ```
 SELECT * FROM messages;
 ```
 
+You should see a list of stored messages with timestamps.
 
-## 📁 Project Structure
-```
+## 💼 Project Structure
+
+```text
 nats_subscriber_app/
 ├── app/
 │   ├── api/
 │   │   └── subscriber.py
-│   ├── data/
-│   │   ├── database.py
-│   │   └── repository.py
-│   └── service/
-│       └── processor.py
-├── .env
-├── Dockerfile
+│   ├── service/
+│   │   └── processor.py
+│   └── data/
+│       ├── database.py
+│       └── repository.py
 ├── docker-compose.yml
-└── requirements.txt
+├── .env
+├── .gitignore
+├── requirements.txt
+└── README.md
 ```
+
+## 📦 Credits
+Made for educational purposes for CS322: Software Engineering course.
